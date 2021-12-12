@@ -1,86 +1,176 @@
-import { Component } from 'react';
-import { toast } from 'react-toastify';
-import ImageGallery from '../components/ImageGallery';
-import Button from '../components/Button';
+// import { Component } from 'react';
+// import { toast } from 'react-toastify';
+// import ImageGallery from '../components/ImageGallery';
+// import Button from '../components/Button';
+// import { ENV } from '../src/consts';
 
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '23902495-d255dd7217da8bb07f7abae59';
+// const BASE_URL = 'https://pixabay.com/api/';
+// const API_KEY = '23902495-d255dd7217da8bb07f7abae59';
 
-export default class PixabayApiService extends Component {
-  static defaultProps = {
-    perPage: 12,
-    page: 1,
-  };
+// export default class PixabayApiService extends Component {
+// state = {
+//   page: 1,
+//   images: [],
+//   error: null,
+//   status: 'idle',
+// };
 
-  state = {
-    page: this.props.page,
-    images: null,
-    loading: false,
-    error: null,
-  };
+// componentDidUpdate(prevProps, prevState) {
+//   if (prevProps.searchQuery !== this.props.searchQuery) {
+//     this.setState({ status: 'pending', page: 1, images: [] });
+//     this.fetchImages();
+//   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.searchQuery !== this.props.searchQuery) {
-      // console.log('searchQuery new....');
-      this.toggleLoading();
-      // this.setState({ loading: true });
-      this.fetchImages();
-    }
-  }
+//   if (prevState.page !== this.state.page) {
+//     this.fetchImages();
+//   }
+// }
 
-  toggleLoading() {
-    this.setState(({ loading }) => ({ loading: !loading }));
-  }
+// export async function fetchImages() {
+//   const searchParams = new URLSearchParams({
+//     image_type: 'photo',
+//     orientation: 'horizontal',
+//     q: this.props.searchQuery,
+//     page: this.state.page,
+//     per_page: 12,
+//     key: API_KEY,
+//   });
 
-  async fetchImages() {
-    const searchParams = new URLSearchParams({
-      image_type: 'photo',
-      orientation: 'horizontal',
-      q: this.props.searchQuery,
-      page: this.props.page,
-      per_page: this.props.perPage,
-      key: API_KEY,
-    });
+//   try {
+//     const response = await fetch(`${BASE_URL}?${searchParams}`);
+//     if (response.ok) {
+//       const articles = await response.json();
+//       this.setState(prevState => ({
+//         images: [...prevState.images, ...articles.hits],
+//         status: 'resolved',
+//       }));
+//     } else {
+//       return Promise.reject(
+//         new Error(`No matches found for ${this.props.searchQuery}`),
+//       );
+//     }
+//   } catch (error) {
+//     this.setState({ error, status: 'rejected' });
+//     // toast.error('Input field must not be empty');
+//   }
+// }
 
-    try {
-      const response = await fetch(`${BASE_URL}?${searchParams}`);
-      const articles = await response.json();
-      this.setState({ images: articles.hits });
-    } catch (error) {
-      this.setState({ error });
-      // console.log(error);
-    }
+// incrementPage = () => {
+//   this.setState(prevState => ({
+//     page: prevState.page + 1,
+//   }));
+// };
 
-    this.toggleLoading();
-    this.incrementPage();
-  }
+//   render() {
+//     // const { images, error, status } = this.state;
 
-  incrementPage() {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
-  }
+//     if (status === 'idle') {
+//       return <div>Введіть щось</div>;
+//     }
 
-  resetPage() {
-    this.setState({ page: 1 });
-  }
+//     if (status === 'pending') {
+//       return <div>Loading...</div>;
+//     }
 
-  //   get query() {
-  //     return this.state.searchQuery;
-  //   }
-  //   set query(newQuery) {
-  //     this.setState({ searchQuery: newQuery });
-  //   }
+//     if (status === 'rejected') {
+//       return <h1>{error.message}</h1>;
+//     }
 
-  render() {
-    const { images, loading } = this.state;
-    return (
-      <div>
-        {loading && <div>Loading...</div>}
+//     if (status === 'resolved') {
+//       return (
+//         <>
+//           <ImageGallery images={images} />
+//           <Button onLoadMore={this.incrementPage} />
+//         </>
+//       );
+//     }
+//   }
+// }
 
-        {images && <ImageGallery images={images} />}
-        {images && <Button onLoadMore={this.fetchImages} />}
-      </div>
-    );
-  }
-}
+// import { Component } from 'react';
+// import { toast } from 'react-toastify';
+// import ImageGallery from '../components/ImageGallery';
+// import Button from '../components/Button';
+
+// const BASE_URL = 'https://pixabay.com/api/';
+// const API_KEY = '23902495-d255dd7217da8bb07f7abae59';
+
+// export default class PixabayApiService extends Component {
+//   state = {
+//     page: 1,
+//     images: [],
+//     error: null,
+//     status: 'idle',
+//   };
+
+//   componentDidUpdate(prevProps, prevState) {
+//     if (prevProps.searchQuery !== this.props.searchQuery) {
+//       this.setState({ status: 'pending', page: 1, images: [] });
+//       this.fetchImages();
+//     }
+
+//     if (prevState.page !== this.state.page) {
+//       this.fetchImages();
+//     }
+//   }
+
+//   fetchImages = async () => {
+//     const searchParams = new URLSearchParams({
+//       image_type: 'photo',
+//       orientation: 'horizontal',
+//       q: this.props.searchQuery,
+//       page: this.state.page,
+//       per_page: 12,
+//       key: API_KEY,
+//     });
+
+//     try {
+//       const response = await fetch(`${BASE_URL}?${searchParams}`);
+//       if (response.ok) {
+//         const articles = await response.json();
+//         this.setState(prevState => ({
+//           images: [...prevState.images, ...articles.hits],
+//           status: 'resolved',
+//         }));
+//       } else {
+//         return Promise.reject(
+//           new Error(`No matches found for ${this.props.searchQuery}`),
+//         );
+//       }
+//     } catch (error) {
+//       this.setState({ error, status: 'rejected' });
+//       toast.error('Input field must not be empty');
+//     }
+//   };
+
+//   incrementPage = () => {
+//     this.setState(prevState => ({
+//       page: prevState.page + 1,
+//     }));
+//   };
+
+//   render() {
+//     const { images, error, status } = this.state;
+
+//     if (status === 'idle') {
+//       return <div>Введіть щось</div>;
+//     }
+
+//     if (status === 'pending') {
+//       return <div>Loading...</div>;
+//     }
+
+//     if (status === 'rejected') {
+//       return <h1>{error.message}</h1>;
+//     }
+
+//     if (status === 'resolved') {
+//       return (
+//         <>
+//           <ImageGallery images={images} />
+//           <Button onLoadMore={this.incrementPage} />
+//         </>
+//       );
+//     }
+//   }
+// }
