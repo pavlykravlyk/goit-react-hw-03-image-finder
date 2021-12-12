@@ -10,7 +10,9 @@
     "gh-pages": "^3.2.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-icons": "^4.3.1",
     "react-scripts": "4.0.3",
+    "react-toastify": "^8.1.0",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
@@ -44,9 +46,5 @@
     "husky": ">=6",
     "lint-staged": ">=10",
     "prettier": "^2.5.1"
-  },
-  "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.{js,css,md}": "prettier --write"
   }
 }
