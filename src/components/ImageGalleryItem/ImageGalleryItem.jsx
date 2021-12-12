@@ -1,5 +1,9 @@
-import styles from './ImageGalleryItem/ImageGalleryItem';
+// import styles from './ImageGalleryItem.module.css';
 
-<li className={styles.ImageGalleryItem}>
-  <img className={styles.ImageGalleryItem__image} src="" alt="" />
-</li>;
+// export default function ImageGalleryItem({ src, alt }) {
+//   return (
+//     <li className={styles.ImageGalleryItem}>
+//       <img className={styles.ImageGalleryItem__image} src={src} alt={alt} />
+//     </li>
+//   );
+// }
