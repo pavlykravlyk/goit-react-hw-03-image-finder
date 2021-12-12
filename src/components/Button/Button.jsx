@@ -1,19 +1,12 @@
-import { Component } from 'react';
+// import { Component } from 'react';
 import styles from './Button.module.css';
 
-export default class LoadMoreBtn extends Component {
-  state = {};
-  render() {
-    return (
-      <button
-        onClick={() => {
-          this.props.onLoadMore();
-        }}
-        type="button"
-        className={styles.Button}
-      >
-        load more
-      </button>
-    );
-  }
-}
+const LoadMoreBtn = ({ onLoadMore }) => {
+  return (
+    <button onClick={onLoadMore} type="button" className={styles.Button}>
+      load more
+    </button>
+  );
+};
+
+export default LoadMoreBtn;
