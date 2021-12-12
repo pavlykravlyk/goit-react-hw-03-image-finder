@@ -1,16 +1,23 @@
-import { Component } from 'react';
 import styles from './ImageGallery.module.css';
 
-export default class ImageGallery extends Component {
-  render() {
-    return (
-      <ul className={styles.ImageGallery}>
-        {this.props.images.map(image => (
-          <li key={image.id}>
-            <img src={image.webformatURL} alt={image.tags} />
-          </li>
-        ))}
-      </ul>
-    );
-  }
+export default function ImageGallery({ images, onOpenModal }) {
+  return (
+    <ul className={styles.ImageGallery}>
+      {images.map(image => (
+        <li
+          key={image.id}
+          onClick={() => {
+            onOpenModal(image);
+          }}
+          className={styles.ImageGalleryItem}
+        >
+          <img
+            className={styles.ImageGalleryItem__image}
+            src={image.webformatURL}
+            alt={image.tags}
+          />
+        </li>
+      ))}
+    </ul>
+  );
 }
