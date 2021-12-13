@@ -1,13 +1,14 @@
 import styles from './App.module.css';
 import { Component } from 'react';
+import { animateScroll as scroll } from 'react-scroll';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Container from './components/Container';
+import Loader from 'react-loader-spinner';
 import Modal from './components/Modal';
 import Searchbar from './components/Searchbar';
-// import PixabayApiService from './services/pixabay-api';
 import ImageGallery from './components/ImageGallery';
 import Button from './components/Button';
+// import PixabayApiService from './services/pixabay-api';
 
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '23902495-d255dd7217da8bb07f7abae59';
@@ -27,10 +28,13 @@ export default class App extends Component {
     if (prevState.searchQuery !== this.state.searchQuery) {
       this.setState({ status: 'pending', page: 1, images: [] });
       this.fetchImages();
+      scroll.scrollToBottom({ smooth: true });
     }
 
     if (prevState.page !== this.state.page) {
+      this.setState({ status: 'pending' });
       this.fetchImages();
+      scroll.scrollToBottom({ smooth: true });
     }
   }
 
@@ -80,34 +84,40 @@ export default class App extends Component {
     this.setState({ searchQuery });
   };
 
+  scrollToBottom = () => {
+    scroll.scrollToBottom();
+  };
+
   render() {
     const { images, error, status, currentImage } = this.state;
 
     return (
       <div className={styles.App}>
-        <Container>
-          <Searchbar onSubmit={this.handleSearchbarFormSubmit} />
+        <Searchbar onSubmit={this.handleSearchbarFormSubmit} />
+        {/* {status === 'idle' && <div>Введіть щось</div>} */}
 
-          {status === 'idle' && <div>Введіть щось</div>}
+        {status === 'rejected' && <h1>{error.message}</h1>}
 
-          {status === 'pending' && <div>Loading...</div>}
-
-          {status === 'rejected' && <h1>{error.message}</h1>}
-
-          {status === 'resolved' && (
+        {status === 'resolved' && (
+          <>
             <ImageGallery images={images} onOpenModal={this.toggleModal} />
-          )}
-          {this.state.images.length > 0 ? (
             <Button onLoadMore={this.incrementPage} />
-          ) : null}
-          {this.state.showModal && (
-            <Modal onClose={this.toggleModal}>
-              <img src={currentImage.largeImageURL} alt={currentImage.tags} />
-            </Modal>
-          )}
+          </>
+        )}
 
-          <ToastContainer autoClose={3000} />
-        </Container>
+        {status === 'pending' && (
+          <>
+            <ImageGallery images={images} onOpenModal={this.toggleModal} />
+            <Loader type="ThreeDots" color="#00BFFF" height={80} width={80} />
+          </>
+        )}
+
+        {this.state.showModal && (
+          <Modal onClose={this.toggleModal}>
+            <img src={currentImage.largeImageURL} alt={currentImage.tags} />
+          </Modal>
+        )}
+        <ToastContainer autoClose={3000} />
       </div>
     );
   }
