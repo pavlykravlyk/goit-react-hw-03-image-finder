@@ -8,12 +8,11 @@ import Modal from './components/Modal';
 import Searchbar from './components/Searchbar';
 import ImageGallery from './components/ImageGallery';
 import Button from './components/Button';
-// import PixabayApiService from './services/pixabay-api';
-
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '23902495-d255dd7217da8bb07f7abae59';
+import PixabayApiService from './services/pixabay-api';
 
 export default class App extends Component {
+  static propTypes = {};
+
   state = {
     searchQuery: '',
     showModal: false,
@@ -21,56 +20,50 @@ export default class App extends Component {
     images: [],
     error: null,
     status: 'idle',
-    currentImage: {},
+    currImg: {},
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchQuery !== this.state.searchQuery) {
-      this.setState({ status: 'pending', page: 1, images: [] });
-      this.fetchImages();
-      scroll.scrollToBottom({ smooth: true });
+    const { searchQuery, page } = this.state;
+
+    if (prevState.searchQuery !== searchQuery) {
+      this.setState({ status: 'pending', page: 1 });
+
+      PixabayApiService(searchQuery)
+        .then(articles =>
+          this.setState({
+            images: articles,
+            status: 'resolved',
+          }),
+        )
+        .catch(error => this.setState({ error, status: 'rejected' }));
+
+      scroll.scrollToBottom();
     }
 
-    if (prevState.page !== this.state.page) {
+    if (prevState.page !== page) {
       this.setState({ status: 'pending' });
-      this.fetchImages();
-      scroll.scrollToBottom({ smooth: true });
+
+      PixabayApiService(searchQuery, page)
+        .then(articles =>
+          this.setState(prevState => ({
+            images: [...prevState.images, ...articles],
+            status: 'resolved',
+          })),
+        )
+        .catch(error => {
+          this.setState({ error, status: 'rejected' });
+          toast.error(`${searchQuery} no found`);
+        });
+
+      scroll.scrollToBottom();
     }
   }
 
-  fetchImages = async () => {
-    const searchParams = new URLSearchParams({
-      image_type: 'photo',
-      orientation: 'horizontal',
-      q: this.state.searchQuery,
-      page: this.state.page,
-      per_page: 12,
-      key: API_KEY,
-    });
-
-    try {
-      const response = await fetch(`${BASE_URL}?${searchParams}`);
-      if (response.ok) {
-        const articles = await response.json();
-        this.setState(prevState => ({
-          images: [...prevState.images, ...articles.hits],
-          status: 'resolved',
-        }));
-      } else {
-        return Promise.reject(
-          new Error(`No matches found for ${this.props.searchQuery}`),
-        );
-      }
-    } catch (error) {
-      this.setState({ error, status: 'rejected' });
-      toast.error('Input field must not be empty');
-    }
-  };
-
-  toggleModal = event => {
+  toggleModal = image => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
-      currentImage: event,
+      currImg: image,
     }));
   };
 
@@ -89,32 +82,33 @@ export default class App extends Component {
   };
 
   render() {
-    const { images, error, status, currentImage } = this.state;
+    const { images, error, status, currImg, searchQuery } = this.state;
 
     return (
       <div className={styles.App}>
         <Searchbar onSubmit={this.handleSearchbarFormSubmit} />
-        {/* {status === 'idle' && <div>Введіть щось</div>} */}
+        {status === 'idle' && <div>Free images</div>}
 
         {status === 'rejected' && <h1>{error.message}</h1>}
 
         {status === 'resolved' && (
           <>
             <ImageGallery images={images} onOpenModal={this.toggleModal} />
-            <Button onLoadMore={this.incrementPage} />
+            {images.length !== 0 && <Button onLoadMore={this.incrementPage} />}
+            {images.length === 0 && <div>{searchQuery} no found</div>}
           </>
         )}
 
         {status === 'pending' && (
           <>
             <ImageGallery images={images} onOpenModal={this.toggleModal} />
-            <Loader type="ThreeDots" color="#00BFFF" height={80} width={80} />
+            <Loader type="ThreeDots" color="#3f51b5" height={80} width={80} />
           </>
         )}
 
         {this.state.showModal && (
           <Modal onClose={this.toggleModal}>
-            <img src={currentImage.largeImageURL} alt={currentImage.tags} />
+            <img src={currImg.largeImageURL} alt={currImg.tags} />
           </Modal>
         )}
         <ToastContainer autoClose={3000} />
