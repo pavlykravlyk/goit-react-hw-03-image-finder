@@ -12,6 +12,7 @@ export default function ImageGallery({ images, onOpenModal }) {
           className={styles.ImageGalleryItem}
         >
           <img
+            height={260}
             className={styles.ImageGalleryItem__image}
             src={image.webformatURL}
             alt={image.tags}
